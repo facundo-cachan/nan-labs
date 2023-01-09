@@ -18,10 +18,10 @@
     "next": "13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-imgix": "^9.5.4",
+    "react-imgix": "9.5.4",
     "typescript": "4.9.4"
   },
   "devDependencies": {
-    "@types/react-imgix": "^9.5.0"
+    "@types/react-imgix": "9.5.0"
   }
 }

@@ -71,6 +71,7 @@ const data = {
     {
       id: 'flip',
       name: 'Flip Axis',
+      type: 'select',
       options: [
         {
           id: 'h',
@@ -89,7 +90,8 @@ const data = {
     {
       id: 'orient',
       name: 'Orientation',
-      type: [
+      type: 'select',
+      options: [
         {
           id: 90,
           name: '90º',
@@ -108,6 +110,18 @@ const data = {
       id: 'rot',
       name: 'Rotation',
       type: 'range'
+    },
+  ],
+  Stylize: [
+    {
+      id: 'blur',
+      name: 'Gaussian Blur',
+      type: 'range',
+    },
+    {
+      id: 'px',
+      name: 'Pixellate',
+      type: 'range',
     },
   ]
 }

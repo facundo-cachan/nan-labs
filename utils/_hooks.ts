@@ -1,13 +1,5 @@
 import { useReducer } from "react"
 
-enum ActionTypes {
-  add = 'add', remove = 'remove'
-}
-type Action = {
-  type: ActionTypes
-  payload: any
-}
-
 export const useBiDimFind = (arr: Array<[]>, key: string) => Object.keys(arr).map((keys: any) => arr[keys].map(({ id, name }: { id: string; name: string }) => { if (id === key) return name }))
 
 export const useUpdateState = (initialState: any) => useReducer((state: any, newState: any) => {
