@@ -1,11 +1,11 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import Head from 'next/head'
 import Image from 'next/image'
 import Imgix from 'react-imgix'
 
 import fetcher from '../utils/_fetcher'
-import { useUpdateState, useBiDimFind } from '../utils/_hooks'
-import styles from '../styles/Imgix.module.css'
+import { useUpdateState } from '../utils/_hooks'
+import styles from '../styles/Home.module.css'
 
 import type { GetStaticProps } from 'next'
 
@@ -17,11 +17,15 @@ const { API_URL, IMGIX_SAMPLE_LIST } = process.env
 
 export default function Imgixpage({ imgList, rendering }: Props) {
   const [imgs, setImgs] = useState<Array<Img>>(imgList)
-  const [renderValues] = useState(rendering)
+  const [renderValues, setRenderValues] = useState([])
   const [defaultValue, setDefaultValue] = useState(0)
   const [imgixParams, setImgixParams] = useUpdateState({ rot: 0 })
   const [inputType, setInputType] = useState<{ id: string; type: string; values?: Array<Option> } | undefined>()
   const [imgSelected, setImg] = useState<string | null>(null)
+
+  useEffect(() => {
+    setRenderValues(rendering)
+  }, [rendering])
 
   const addImg = ({ target: { id, value } }: any) => {
     setImgs((prev: any) => [
@@ -89,43 +93,36 @@ export default function Imgixpage({ imgList, rendering }: Props) {
         <section className={styles.section}>
           <article className={styles.article}>
             <p>
-              The test API only allows use images hosted on the provider's hosting, as an example you can use the following:
+              The test API only allows use images hosted on the providers hosting, as an example you can use the following:
               <br />
               <b>https://assets.imgix.net/unsplash/goldengate.jpg</b>
             </p>
             <input type="text" id="newImg" className={styles.input} placeholder="Load your image" onBlur={addImg} />
             <div style={{ display: imgSelected ? 'block' : 'none' }}>
               {
-                Object.keys(imgixParams).length > 0 && (<h3 className={styles.title}>Effects applied, click on to remove it</h3>)
-              }
-              {
-                Object.keys(imgixParams).map((param) => imgixParams[param] !== 0 && (
-                  <button key={param} id={param} className={styles.paramBtn} onClick={updateParams}>
+                Object.keys(renderValues)?.length > 0 && (
+                  <>
+                    <h3 className={styles.title}>Effects availables</h3>
                     {
-                      useBiDimFind(renderValues, param)
-                    }: {imgixParams[param]}
-                  </button>
-                ))
-              }
-              <hr />
-              <h3 className={styles.title}>Effects availables</h3>
-              {
-                Object.keys(renderValues).map((key: any, index: number) => (
-                  <Fragment key={index}>
-                    <h4 className={styles.title}>{key}</h4>
-                    {renderValues[key].map((
-                      { id, name, type, options }:
-                        { id: string; name: string; type: string; options?: Array<Option> }
-                    ) => (
-                      <button
-                        key={id}
-                        id={id}
-                        className={styles.paramBtn}
-                        onClick={() => setInput({ id, type, values: options })}
-                      >{name}</button>
-                    ))}
-                  </Fragment>
-                ))
+                      Object.keys(renderValues).map((key: any, index: number) => (
+                        <Fragment key={index}>
+                          <h4 className={styles.title}>{key}</h4>
+                          {(renderValues[key] as []).map((
+                            { id, name, type, options }:
+                              { id: string; name: string; type: string; options?: Array<Option> }
+                          ) => (
+                            <button
+                              key={id}
+                              id={id}
+                              className={imgixParams[id] ? `${styles.paramBtn} ${styles.paramBtnActive}` : styles.paramBtn}
+                              onClick={() => setInput({ id, type, values: options })}
+                            >{name} {imgixParams[id] !== 0 && imgixParams[id]}</button>
+                          ))}
+                        </Fragment>
+                      ))
+                    }
+                  </>
+                )
               }
               <br /><br />
               {inputType && Input()}
@@ -145,6 +142,7 @@ export default function Imgixpage({ imgList, rendering }: Props) {
     </>
   )
 }
+
 export const getStaticProps: GetStaticProps = async () => {
   const imgList = await fetcher({
     url: IMGIX_SAMPLE_LIST as string
@@ -156,5 +154,4 @@ export const getStaticProps: GetStaticProps = async () => {
     props: { imgList, rendering },
     revalidate: 10,
   }
-
 }
